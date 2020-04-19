@@ -13,10 +13,10 @@
 #include "ShaderProgram.h"
 #include "Map.h"
 
-enum EntityType { PLAYER, PLATFORM, ENEMY, BOSS };
+enum EntityType {PLAYER, PLATFORM, ENEMY};
 
-enum AIType { ENEMYAI, BOSSAI };
-enum AIState {IDLE, WALKING, ATTACKING};
+enum AIType {ENEMYAI};
+enum AIState {PATROL, CHASE};
 
 class Entity {
 public:
@@ -27,7 +27,7 @@ public:
 
     int life = 3;
     glm::vec3 position;
-    glm::vec3 movement;
+    glm::vec3 movement = glm::vec3(0);
     glm::vec3 acceleration;
     glm::vec3 velocity;
 
@@ -73,8 +73,7 @@ public:
     void Render(ShaderProgram *program);
     void DrawSpriteFromTextureAtlas(ShaderProgram *program, GLuint textureID, int index);
 
-    void AI(Entity* player);
-    void AIEnemy(Entity* player);
-    void AIBoss(Entity* player);
+    void AI(Entity* player, Map* map);
+    void AIEnemy(Entity* player, Map* map);
     
 };

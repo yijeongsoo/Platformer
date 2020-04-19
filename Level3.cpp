@@ -30,7 +30,7 @@ void Level3::Initialize() {
     // Initialize Player
     state.player = new Entity();
     state.player->entityType = PLAYER;
-    state.player->position = glm::vec3(5, 0, 0);
+    state.player->position = glm::vec3(7, 0, 0);
     state.player->movement = glm::vec3(0);
     state.player->acceleration = glm::vec3(0, -9.81, 0); //Setting Acceleration to Gravity
     state.player->speed = 1.75f;
@@ -54,25 +54,14 @@ void Level3::Initialize() {
     state.player->animRows = 4;
 
     state.enemies = new Entity[LEVEL3_ENEMYCOUNT];
-    GLuint enemyTextureID = Util::LoadTexture("enemies.png");
-
+    state.enemies[0].textureID = Util::LoadTexture("ctg.png");
+    state.enemies[0].position = glm::vec3(4.0f, 0, 0);
+    state.enemies[0].acceleration = glm::vec3(0, -9.81, 0);
     state.enemies[0].entityType = ENEMY;
-    state.enemies[0].textureID = enemyTextureID;
-    state.enemies[0].position = glm::vec3(2, -5.0, 0);
-    state.enemies[0].acceleration = glm::vec3(0, 0, 0);
-    state.enemies[0].animIndices = new int[3]{ 58, 59, 60 };
-
-    state.enemies[0].aiType = BOSSAI;
-    state.enemies[0].aiState = ATTACKING;
-    state.enemies[0].speed = 2.0f;
-    //state.enemies[0].isActive = false;
-      
-    state.underlings[i].animFrames = 3;
-    state.underlings[i].animIndex = 0;
-    state.underlings[i].animTime = 0;
-    state.underlings[i].animCols = 12;
-    state.underlings[i].animRows = 8;
-    state.underlings[i].width = 0.8f;
+    state.enemies[0].aiType = ENEMYAI;
+    state.enemies[0].aiState = CHASE;
+    state.enemies[0].speed = 0.2f;
+    state.enemies[0].isActive = true;
 
     state.text = new Entity();
     GLuint textTextureID = Util :: LoadTexture("font.png");
@@ -81,9 +70,9 @@ void Level3::Initialize() {
 }
 void Level3::Update(float deltaTime) {
     state.player->Update(deltaTime, state.player, state.enemies, LEVEL3_ENEMYCOUNT, state.map);
-    for (int i = 0; i < LEVEL3_ENEMYCOUNT; i++) {
-        state.enemies[i].Update(deltaTime, state.player, state.enemies, LEVEL3_ENEMYCOUNT, state.map);
-    }
+
+    state.enemies[0].Update(deltaTime, state.player, state.enemies, LEVEL3_ENEMYCOUNT, state.map);
+   
 
     if (state.player->position.x >= 34) {
         state.EndOfGame = true;
@@ -97,8 +86,5 @@ void Level3::Update(float deltaTime) {
 void Level3::Render(ShaderProgram* program) {
     state.map->Render(program);
     state.player->Render(program);
-
-    for (int i = 0; i < LEVEL3_ENEMYCOUNT; i++) {
-        state.enemies[i].Render(program);
-    }
+    state.enemies[0].Render(program);
 }

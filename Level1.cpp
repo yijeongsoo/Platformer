@@ -62,7 +62,7 @@ void Level1::Initialize() {
 void Level1::Update(float deltaTime) {
 	state.player->Update(deltaTime, state.player, state.enemies, LEVEL1_ENEMYCOUNT, state.map);
 
-	if (state.player->position.x >= 32) {
+	if (state.player->position.x >= 33) {
 		state.nextScene = 2;
 	}
     if (state.player->life == 0) {

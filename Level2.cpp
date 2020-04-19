@@ -2,7 +2,7 @@
 #include "Util.h"
 #define LEVEL2_WIDTH 36
 #define LEVEL2_HEIGHT 8
-#define LEVEL2_ENEMYCOUNT 3
+#define LEVEL2_ENEMYCOUNT 2
 unsigned int level2_data[] =
 {
 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,
@@ -28,7 +28,7 @@ void Level2::Initialize() {
     // Initialize Player
     state.player = new Entity();
     state.player->entityType = PLAYER;
-    state.player->position = glm::vec3(5, 0, 0);
+    state.player->position = glm::vec3(7, 0, 0);
     state.player->movement = glm::vec3(0);
     state.player->acceleration = glm::vec3(0, -9.81, 0); //Setting Acceleration to Gravity
     state.player->speed = 1.75f;
@@ -52,34 +52,23 @@ void Level2::Initialize() {
     state.player->animRows = 4;
 
     state.enemies = new Entity[LEVEL2_ENEMYCOUNT];
-    GLuint enemyTextureID = Util::LoadTexture("enemies.png");
+    state.enemies[0].textureID = Util::LoadTexture("ctg.png");
+    state.enemies[0].position = glm::vec3(27.5, -5.0, 0);
+    state.enemies[0].acceleration = glm::vec3(0, -9.81, 0);
+    state.enemies[0].entityType = ENEMY;
+    state.enemies[0].aiType = ENEMYAI;
+    state.enemies[0].aiState = PATROL;
+    state.enemies[0].speed = 1.0f;
 
-    for (int i = 0; i < LEVEL2_ENEMYCOUNT; i++) {
-        state.enemies[i].animIndices = new int[3]{ 1, 2, 3 };
-        state.enemies[i].textureID = enemyTextureID;
-        state.enemies[i].entityType = ENEMY;
-        state.enemies[i].acceleration = glm::vec3(0, -9.81, 0);
-        state.enemies[i].aiType = ENEMYAI;
-        state.enemies[i].aiState = WALKING;
-        state.enemies[i].speed = 2.0f;
-        state.underlings[i].animFrames = 3;
-        state.underlings[i].animIndex = 0;
-        state.underlings[i].animTime = 0;
-        state.underlings[i].animCols = 12;
-        state.underlings[i].animRows = 8;
-        state.underlings[i].width = 0.8f;
-    }
-
-    
-    state.enemies[0].position = glm::vec3(12.0, -5.0, 0);
     //state.enemies[0].isActive = false;
 
-    state.enemies[1].position = glm::vec3(24.5, -5.0, 0);
-    //state.enemies[1].isActive = false;
-
-    state.enemies[2].position = glm::vec3(27.5, -5.0, 0);
-    //state.enemies[2].isActive = false;
-
+    state.enemies[1].textureID = Util::LoadTexture("ctg.png");
+    state.enemies[1].position = glm::vec3(12.0, -5.0, 0);
+    state.enemies[1].acceleration = glm::vec3(0, -9.81, 0);
+    state.enemies[1].entityType = ENEMY;
+    state.enemies[1].aiType = ENEMYAI;
+    state.enemies[1].aiState = PATROL;
+    state.enemies[1].speed = 1.0f;
 
     state.text = new Entity();
     GLuint textTextureID = Util::LoadTexture("font.png");
@@ -87,10 +76,11 @@ void Level2::Initialize() {
 }
 void Level2::Update(float deltaTime) {
     state.player->Update(deltaTime, state.player, state.enemies, LEVEL2_ENEMYCOUNT, state.map);
-    for (int i = 0; i < LEVEL2_ENEMYCOUNT; i++) {
-        state.enemies[i].Update(deltaTime, state.player, state.enemies, LEVEL2_ENEMYCOUNT, state.map);
-    }
-    if (state.player->position.x >= 32) {
+    state.enemies[0].Update(deltaTime, state.player, state.enemies, LEVEL2_ENEMYCOUNT, state.map);
+    state.enemies[1].Update(deltaTime, state.player, state.enemies, LEVEL2_ENEMYCOUNT, state.map);
+
+
+    if (state.player->position.x >= 33) {
         state.nextScene = 3;
     }
     if (state.player->life == 0) {
@@ -101,7 +91,6 @@ void Level2::Update(float deltaTime) {
 void Level2::Render(ShaderProgram* program) {
     state.map->Render(program);
     state.player->Render(program);
-    for (int i = 0; i < LEVEL2_ENEMYCOUNT; i++) {
-        state.enemies[i].Render(program);
-    }
+    state.enemies[0].Render(program);
+    state.enemies[1].Render(program);
 }

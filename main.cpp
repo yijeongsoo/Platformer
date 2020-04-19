@@ -115,29 +115,33 @@ void ProcessInput() {
                             }
                             break;
                         }
+
                     case SDLK_RETURN:
                         if (currentScene->state.sceneType == MAINMENU) {
                             currentScene->state.nextScene = 1;
                         }
+                        break;
                 }
                 break; // SDL_KEYDOWN
         }
     }
     
     const Uint8 *keys = SDL_GetKeyboardState(NULL);
+    if (currentScene->state.EndOfGame != true) {
+        if (keys[SDL_SCANCODE_LEFT]) {
+            currentScene->state.player->movement.x = -1.0f;
+            currentScene->state.player->animIndices = currentScene->state.player->animLeft;
+        }
+        else if (keys[SDL_SCANCODE_RIGHT]) {
+            currentScene->state.player->movement.x = 1.0f;
+            currentScene->state.player->animIndices = currentScene->state.player->animRight;
+        }
+    }
 
-    if (keys[SDL_SCANCODE_LEFT]) {
-        currentScene->state.player->movement.x = -1.0f;
-        currentScene->state.player->animIndices = currentScene->state.player->animLeft;
-    }
-    else if (keys[SDL_SCANCODE_RIGHT]) {
-        currentScene->state.player->movement.x = 1.0f;
-        currentScene->state.player->animIndices = currentScene->state.player->animRight;
-    }
-    
     if (glm::length(currentScene->state.player->movement) > 1.0f) {
         currentScene->state.player->movement = glm::normalize(currentScene->state.player->movement);
     }
+
 
 }
 
@@ -155,7 +159,7 @@ void Update() {
         accumulator = deltaTime;
         return;
     }
-    while (deltaTime >= FIXED_TIMESTEP && currentScene->state.EndOfGame != true) {
+    while (deltaTime >= FIXED_TIMESTEP) {
         // Update. Notice it's FIXED_TIMESTEP. Not deltaTime
 
         currentScene->Update(FIXED_TIMESTEP);       
@@ -211,7 +215,7 @@ void Render() {
             Util::DrawText(&program, currentScene->state.text->textureID, "Remaining Lives : 0", 0.4f, -0.2f, glm::vec3((currentScene->state.player->position.x) + 1.0, -1.0, 0));
         }
         else if (currentScene->state.player->life == 0) {
-            Util::DrawText(&program, currentScene->state.text->textureID, "Game Over", 0.7f, -0.25f, glm::vec3(currentScene->state.player->position.x, -2.0, 0));
+            Util::DrawText(&program, currentScene->state.text->textureID, "Game Over", 0.7f, -0.25f, glm::vec3(currentScene->state.player->position.x, -3.0, 0));
         }
         
     }

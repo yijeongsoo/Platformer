@@ -134,62 +134,35 @@ void Entity::CheckCollisionsX(Map* map)
     }
 }
 
-void Entity::AIEnemy(Entity* player) {
+void Entity :: AIEnemy(Entity* player, Map* map) {
     switch (aiState) {
-        case IDLE:
-            aiState = WALKING;
-            break;
+    case PATROL:
+        movement.x = -1.0f;
+        CheckCollisionsX(map);
+        if (collidedRight) { movement.x = -1.0f; }
+        else if (collidedLeft) { movement.x = 1.0f; }
+        break;
 
-        case WALKING:
-            movement = glm::vec3(-1, 0, 0);
-            break;
-
-        case ATTACKING:
-            aiState = WALKING;
-            break;
-
+    case CHASE:
+        if (player->position.x > position.x) {
+            movement.x = 1.0f;
+        }
+        else { movement.x = -1.0f; }
+        if (player->position.y > position.y) {
+            movement.y = 1.0f;
+        }
+        else { movement.y = -1.0f; }
+        break;
     }
 }
 
-void Entity::AIBoss(Entity* player) {
-    switch (aiState) {
-        case IDLE:
-            aiState = WALKING;
-            break;
-        
-        case WALKING:
-            aiState = ATTACKING;
-            break;
-
-        case ATTACKING:
-            if (player->position.x < position.x) {
-                movement = glm::vec3(-1, 0, 0);
-            }
-            else {
-                movement = glm::vec3(1, 0, 0);
-            }
-            if (player->position.y < position.y) {
-                movement = glm::vec3(0, -1, 0);
-            }
-            else {
-                movement = glm::vec3(0, 1, 0);
-            }
-            break;
-
-    }
-}
-
-void Entity::AI(Entity* player) {
+void Entity::AI(Entity* player, Map* map) {
     switch (aiType) {
-        case ENEMYAI:
-            AIEnemy(player);
-            break;
-
-        case BOSSAI:
-            AIBoss(player);
-            break;
+    case ENEMYAI:
+        AIEnemy(player, map);
     }
 }
+
 
 void Entity::Update(float deltaTime, Entity* player, Entity* objects, int objectCount, Map* map)
 {
@@ -200,8 +173,8 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
     collidedLeft = false;
     collidedRight = false;
 
-    if (entityType == (ENEMY || BOSS) ) {
-        AI(player);
+    if (entityType == ENEMY) {
+        AI(player, map);
     }
 
     if (animIndices != NULL) {
@@ -227,27 +200,24 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
         velocity.y += jumpPower;
     }
 
-    velocity.x = movement.x * speed;    
-    velocity += acceleration * deltaTime;
+    velocity.x = movement.x * speed;
+    velocity.y += acceleration.y * deltaTime;
 
     position.y += velocity.y * deltaTime; // Move on Y
-    if (entityType != BOSS){ CheckCollisionsY(map); }
+    CheckCollisionsY(map); 
     CheckCollisionsY(objects, objectCount); // Fix if needed
     position.x += velocity.x * deltaTime; // Move on X
-    if (entityType != BOSS) { CheckCollisionsX(map); }
+    CheckCollisionsX(map); 
     CheckCollisionsX(objects, objectCount); // Fix if needed
 
-    if (entityType == PLAYER && lastCollision == (ENEMY || BOSS)) {
+    if (entityType == PLAYER && lastCollision == (ENEMY)) {
         life -= 1;
         lastCollision = PLAYER;
+        if (life != 0) { position = glm::vec3(5.0, 0, 0); }
     }
     if (entityType == PLAYER && position.y < -8.0) {
         life -= 1;
         if (life != 0) { position = glm::vec3(5.0, 0, 0); }
-    }
-
-    if (entityType == (ENEMY || BOSS) && (collidedLeft == true || collidedRight == true)) {
-        movement.x = movement.x * -1.0f;
     }
 
     modelMatrix = glm::mat4(1.0f);
