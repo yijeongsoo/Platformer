@@ -55,8 +55,8 @@ void Level3::Initialize() {
 
     state.enemies = new Entity[LEVEL3_ENEMYCOUNT];
     state.enemies[0].textureID = Util::LoadTexture("ctg.png");
-    state.enemies[0].position = glm::vec3(4.0f, 0, 0);
-    state.enemies[0].acceleration = glm::vec3(0, -9.81, 0);
+    state.enemies[0].position = glm::vec3(4.0f, -1.0f, 0);
+    //state.enemies[0].acceleration = glm::vec3(0, -9.81, 0);
     state.enemies[0].entityType = ENEMY;
     state.enemies[0].aiType = ENEMYAI;
     state.enemies[0].aiState = CHASE;

@@ -137,10 +137,10 @@ void Entity::CheckCollisionsX(Map* map)
 void Entity :: AIEnemy(Entity* player, Map* map) {
     switch (aiState) {
     case PATROL:
-        movement.x = -1.0f;
-        CheckCollisionsX(map);
-        if (collidedRight) { movement.x = -1.0f; }
-        else if (collidedLeft) { movement.x = 1.0f; }
+        if (player->position.x > position.x) {
+            movement.x = 1.0f;
+        }
+        else { movement.x = -1.0f; }
         break;
 
     case CHASE:
@@ -148,19 +148,22 @@ void Entity :: AIEnemy(Entity* player, Map* map) {
             movement.x = 1.0f;
         }
         else { movement.x = -1.0f; }
+
         if (player->position.y > position.y) {
-            movement.y = 1.0f;
+            acceleration.y = 1.0f;
         }
-        else { movement.y = -1.0f; }
+        else { acceleration.y = -1.0f; }
         break;
     }
 }
+
 
 void Entity::AI(Entity* player, Map* map) {
     switch (aiType) {
     case ENEMYAI:
         AIEnemy(player, map);
     }
+
 }
 
 
@@ -173,7 +176,7 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
     collidedLeft = false;
     collidedRight = false;
 
-    if (entityType == ENEMY) {
+    if (entityType == ENEMY ) {
         AI(player, map);
     }
 
@@ -205,10 +208,10 @@ void Entity::Update(float deltaTime, Entity* player, Entity* objects, int object
 
     position.y += velocity.y * deltaTime; // Move on Y
     CheckCollisionsY(map); 
-    CheckCollisionsY(objects, objectCount); // Fix if needed
+    if (entityType != ENEMY) { CheckCollisionsY(objects, objectCount); } // Fix if needed
     position.x += velocity.x * deltaTime; // Move on X
     CheckCollisionsX(map); 
-    CheckCollisionsX(objects, objectCount); // Fix if needed
+    if (entityType != ENEMY) { CheckCollisionsX(objects, objectCount); } // Fix if needed
 
     if (entityType == PLAYER && lastCollision == (ENEMY)) {
         life -= 1;

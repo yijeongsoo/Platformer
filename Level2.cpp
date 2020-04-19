@@ -58,17 +58,18 @@ void Level2::Initialize() {
     state.enemies[0].entityType = ENEMY;
     state.enemies[0].aiType = ENEMYAI;
     state.enemies[0].aiState = PATROL;
-    state.enemies[0].speed = 1.0f;
+    state.enemies[0].speed = 0.2f;
+
 
     //state.enemies[0].isActive = false;
 
     state.enemies[1].textureID = Util::LoadTexture("ctg.png");
-    state.enemies[1].position = glm::vec3(12.0, -5.0, 0);
+    state.enemies[1].position = glm::vec3(13.0, -5.0, 0);
     state.enemies[1].acceleration = glm::vec3(0, -9.81, 0);
     state.enemies[1].entityType = ENEMY;
     state.enemies[1].aiType = ENEMYAI;
     state.enemies[1].aiState = PATROL;
-    state.enemies[1].speed = 1.0f;
+    state.enemies[1].speed = 0.2f;
 
     state.text = new Entity();
     GLuint textTextureID = Util::LoadTexture("font.png");
